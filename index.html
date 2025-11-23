@@ -746,7 +746,6 @@
                   <span>⚡</span>
                   <span id="songStatusShort">闲置中</span>
                 </span>
-                <!-- 🔥 只保留一个可动态切换的来源标签 -->
                 <span class="tag source-tag" id="songSourceTag">
                   <span class="source-dot source-migu"></span>
                   <span id="songSourceText">MiGu</span>
@@ -761,6 +760,10 @@
               <div class="left-buttons">
                 <button id="toggleLyricsBtn" type="button" class="link-btn">
                   🎼 显示/隐藏歌词
+                </button>
+                <!-- 新增：播放模式按钮 -->
+                <button id="playModeBtn" type="button" class="link-btn">
+                  🔁 顺序
                 </button>
               </div>
               <div class="right-buttons">
@@ -987,7 +990,6 @@
   // 音乐逻辑：咪咕 + 网易云 双源
   (function () {
     const API_MIGU = "https://api.cenguigui.cn/api/mg_music/";
-    // 网易云：新接口拆成“搜索 + 详情”
     const API_NETEASE_SEARCH = "https://api.cenguigui.cn/api/music/netease/WyY_Dg.php";
     const API_NETEASE_DETAIL = "https://api.cenguigui.cn/api/netease/music_v1.php";
 
@@ -1011,6 +1013,7 @@
     const lyricsLinkWrap = document.getElementById("lyricsLinkWrap");
     const langToggleBtn = document.getElementById("langToggleBtn");
     const toggleLyricsBtn = document.getElementById("toggleLyricsBtn");
+    const playModeBtn = document.getElementById("playModeBtn");
     const downloadMusicBtn = document.getElementById("downloadMusicBtn");
     const openOriginBtn = document.getElementById("openOriginBtn");
 
@@ -1025,6 +1028,12 @@
     const playlistCountEl = document.getElementById("playlistCount");
     const playlistListEl = document.getElementById("playlistList");
     const shortcutsHintEl = document.getElementById("shortcutsHint");
+
+    // 播放模式：顺序 / 列表循环 / 单曲循环
+    const PLAY_MODE_SEQUENCE = "sequence";
+    const PLAY_MODE_LOOP_ALL = "loop_all";
+    const PLAY_MODE_SINGLE = "single";
+    let playMode = PLAY_MODE_SEQUENCE;
 
     let currentLang = "zh";
 
@@ -1066,7 +1075,7 @@
         playlistEmpty: "空空如也",
         playlistCount: (n) => `${n} 首`,
         shortcutsHint:
-          "键盘快捷键：\nSpace：播放/暂停  ←/→：快退/快进5秒\n↑/↓：音量±5%  P：上一首  N：下一首",
+          "键盘快捷键：\nSpace：播放/暂停  ←/→：快退/快进5秒\n↑/↓：音量±5%  P：上一首  N：下一首  M：切换播放模式",
         nowPlayingIdleTitle: "等待你的点歌 🎵",
         nowPlayingIdleSinger: "小皮卡说：先来一首试试？",
         sourceLabelMigu: "咪咕音乐",
@@ -1075,7 +1084,13 @@
         sourceSummaryNone: "当前来源：暂无",
         sourceSummaryMigu: (a) => `当前来源：${a}`,
         sourceSummaryNetease: (b) => `当前来源：${b}`,
-        sourceSummaryBoth: (a, b) => `当前来源：${a} + ${b}`
+        sourceSummaryBoth: (a, b) => `当前来源：${a} + ${b}`,
+        playModeSequence: "顺序播放",
+        playModeLoopAll: "列表循环",
+        playModeSingle: "单曲循环",
+        playModeSequenceShort: "顺序",
+        playModeLoopAllShort: "列表循环",
+        playModeSingleShort: "单曲"
       },
       en: {
         appTitle: "Pikachu Music Station",
@@ -1116,7 +1131,7 @@
         playlistEmpty: "Empty",
         playlistCount: (n) => `${n} tracks`,
         shortcutsHint:
-          "Keyboard shortcuts:\nSpace: play/pause  ←/→: -/+5s\n↑/↓: volume ±5%  P: prev  N: next",
+          "Keyboard shortcuts:\nSpace: play/pause  ←/→: -/+5s\n↑/↓: volume ±5%  P: prev  N: next  M: switch play mode",
         nowPlayingIdleTitle: "Waiting for your song 🎵",
         nowPlayingIdleSinger: "Pikachu says: pick something to play!",
         sourceLabelMigu: "MiGu Music",
@@ -1125,7 +1140,13 @@
         sourceSummaryNone: "Sources: none",
         sourceSummaryMigu: (a) => `Sources: ${a}`,
         sourceSummaryNetease: (b) => `Sources: ${b}`,
-        sourceSummaryBoth: (a, b) => `Sources: ${a} + ${b}`
+        sourceSummaryBoth: (a, b) => `Sources: ${a} + ${b}`,
+        playModeSequence: "Sequence",
+        playModeLoopAll: "Loop All",
+        playModeSingle: "Single Loop",
+        playModeSequenceShort: "Seq",
+        playModeLoopAllShort: "Loop",
+        playModeSingleShort: "Single"
       }
     };
 
@@ -1268,6 +1289,20 @@
       if (sourceSummaryEl) sourceSummaryEl.textContent = text;
     }
 
+    function updatePlayModeLabel() {
+      const t = langStaticTexts[currentLang];
+      if (!playModeBtn) return;
+      let text = "";
+      if (playMode === PLAY_MODE_SEQUENCE) {
+        text = "➡ " + (t.playModeSequenceShort || t.playModeSequence);
+      } else if (playMode === PLAY_MODE_LOOP_ALL) {
+        text = "🔁 " + (t.playModeLoopAllShort || t.playModeLoopAll);
+      } else {
+        text = "🔂 " + (t.playModeSingleShort || t.playModeSingle);
+      }
+      playModeBtn.textContent = text;
+    }
+
     function applyLanguage() {
       const t = langStaticTexts[currentLang];
       appTitleEl.textContent = t.appTitle;
@@ -1305,6 +1340,7 @@
       shortcutsHintEl.innerHTML = t.shortcutsHint.replace(/\n/g, "<br/>");
 
       updateSourceSummary(lastSearchSources.hasMigu, lastSearchSources.hasNetease);
+      updatePlayModeLabel();
 
       if (!lrcEntries.length) {
         showLyricsPlaceholder(t.lyricsInitialPlaceholder);
@@ -1334,6 +1370,19 @@
       applyLanguage();
     });
 
+    if (playModeBtn) {
+      playModeBtn.addEventListener("click", () => {
+        if (playMode === PLAY_MODE_SEQUENCE) {
+          playMode = PLAY_MODE_LOOP_ALL;
+        } else if (playMode === PLAY_MODE_LOOP_ALL) {
+          playMode = PLAY_MODE_SINGLE;
+        } else {
+          playMode = PLAY_MODE_SEQUENCE;
+        }
+        updatePlayModeLabel();
+      });
+    }
+
     searchForm.addEventListener("submit", function (e) {
       e.preventDefault();
       const q = searchInput.value.trim();
@@ -1346,7 +1395,6 @@
       searchSongs(q);
     });
 
-    // 搜索：咪咕 text + 网易云 JSON
     async function searchSongs(query) {
       const t = langStaticTexts[currentLang];
       try {
@@ -1356,14 +1404,13 @@
           encodeURIComponent(query) +
           "&type=text";
 
-        // 网易云新搜索接口：返回 JSON，带 songid
         const neteaseUrl =
           API_NETEASE_SEARCH +
           "?type=json&msg=" +
           encodeURIComponent(query) +
           "&num=" +
           NETEASE_LIMIT +
-          "&n="; // 按你给的示例保留 &n=
+          "&n=";
 
         const [miguResp, neteaseResp] = await Promise.all([
           fetch(miguUrl),
@@ -1377,7 +1424,6 @@
 
         const miguListRaw = parseSearchResultText(miguText);
 
-        // 把网易云 JSON 统一成 { index, title, singer, songid } 的格式
         let neteaseListRaw = [];
         if (neteaseJson && neteaseJson.code === 200 && Array.isArray(neteaseJson.data)) {
           neteaseListRaw = neteaseJson.data.map((it) => ({
@@ -1414,7 +1460,7 @@
             singer: it.singer,
             source: "netease",
             apiIndex: it.index,
-            songid: it.songid  // 关键：后面请求详情要用 songid
+            songid: it.songid
           });
         });
 
@@ -1432,7 +1478,6 @@
       }
     }
 
-    // 兼容 “1. 歌名 -- 歌手” 文本格式（用于咪咕）
     function parseSearchResultText(text) {
       const lines = text
         .split("\n")
@@ -1466,6 +1511,8 @@
         resultsEl.appendChild(div);
         return;
       }
+
+      const newPlaylist = [];
 
       list.forEach((item) => {
         const row = document.createElement("div");
@@ -1517,6 +1564,8 @@
           songid: item.songid || null
         };
 
+        newPlaylist.push(payload);
+
         const playBtn = document.createElement("button");
         playBtn.type = "button";
         playBtn.className = "pill-btn";
@@ -1536,6 +1585,10 @@
 
         resultsEl.appendChild(row);
       });
+
+      playlist = newPlaylist;
+      currentPlaylistPos = -1;
+      renderPlaylist();
     }
 
     function highlightActiveResult(globalIndex) {
@@ -1594,10 +1647,8 @@
         : t.playlistEmpty;
     }
 
-    // 详情：根据 source 决定走哪个接口
     async function fetchSongDetail(item) {
       if (item.source === "netease") {
-        // 新逻辑：通过 songid 调用 music_v1.php
         if (!item.songid) {
           throw new Error("Missing NetEase songid");
         }
@@ -1617,8 +1668,6 @@
 
         const raw = json.data || {};
 
-        // 这里字段名是根据常见第三方网易云接口推测的，
-        // 如果实际返回字段不一样，你只需要在此处改映射即可。
         const data = {
           title: raw.title || raw.name || item.title,
           singer: raw.singer || raw.artist || raw.artists || item.singer,
@@ -1632,7 +1681,6 @@
         data._source = "netease";
         return data;
       } else {
-        // 咪咕保持原来的 JSON 逻辑
         const url =
           API_MIGU +
           "?msg=" +
@@ -1655,8 +1703,6 @@
       const t = langStaticTexts[currentLang];
       lastQuery = item.query;
 
-      // 播放列表中查找是否已存在该歌曲：
-      // 对网易云优先用 songid 匹配，避免重复。
       let pos = playlist.findIndex((p) => {
         if (p.source !== item.source) return false;
         if (item.source === "netease" && item.songid && p.songid) {
@@ -1703,10 +1749,25 @@
       playSong(item, { fromPlaylist: true });
     }
 
-    function playNextInPlaylist() {
+    function playNextInPlaylist(fromEnded = false) {
       if (!playlist.length) return;
+
+      if (fromEnded && playMode === PLAY_MODE_SINGLE) {
+        if (currentPlaylistPos >= 0 && currentPlaylistPos < playlist.length) {
+          playFromPlaylist(currentPlaylistPos);
+        }
+        return;
+      }
+
       let next = currentPlaylistPos + 1;
-      if (next >= playlist.length) return;
+
+      if (next >= playlist.length) {
+        if (fromEnded && playMode === PLAY_MODE_LOOP_ALL) {
+          next = 0;
+        } else {
+          return;
+        }
+      }
       playFromPlaylist(next);
     }
 
@@ -1724,17 +1785,11 @@
       songTitleEl.textContent = data.title || t.nowPlayingIdleTitle;
       songSingerEl.textContent = data.singer || t.nowPlayingIdleSinger;
 
-      if (!audioEl.paused && audioEl.currentTime > 0 && !audioEl.ended) {
-        songStatusShort.textContent = t.statePlaying;
-      } else {
-        songStatusShort.textContent = t.statePlaying;
-      }
+      songStatusShort.textContent = t.statePlaying;
 
-      // 封面兜底：兼容 cover / pic / picUrl
       const cover = data.cover || data.pic || data.picUrl;
       if (cover) coverImg.src = cover;
 
-      // 播放地址兜底：兼容 music_url / url / music / play_url
       const musicUrl = data.music_url || data.url || data.music || data.play_url;
       if (musicUrl) {
         audioEl.src = musicUrl;
@@ -1745,7 +1800,6 @@
         downloadMusicBtn.href = "#";
       }
 
-      // 原始页面兜底：兼容 link / page / page_url
       const pageLink = data.link || data.page || data.page_url;
       if (pageLink) openOriginBtn.href = pageLink;
       else openOriginBtn.href = "#";
@@ -1756,14 +1810,15 @@
       let labelText = "";
       let dotClass = "source-migu";
 
+      const t2 = langStaticTexts[currentLang];
       if (type === "netease") {
-        labelText = t.sourceLabelNetease;
+        labelText = t2.sourceLabelNetease;
         dotClass = "source-netease";
       } else if (type === "both") {
-        labelText = t.sourceLabelBoth(t.sourceLabelMigu, t.sourceLabelNetease);
+        labelText = t2.sourceLabelBoth(t2.sourceLabelMigu, t2.sourceLabelNetease);
         dotClass = "source-mixed";
       } else {
-        labelText = t.sourceLabelMigu;
+        labelText = t2.sourceLabelMigu;
         dotClass = "source-migu";
       }
 
@@ -1914,7 +1969,8 @@
     audioEl.addEventListener("ended", () => {
       const t = langStaticTexts[currentLang];
       songStatusShort.textContent = t.stateEnded;
-      playNextInPlaylist();
+      // 结束时根据播放模式自动跳转
+      playNextInPlaylist(true);
     });
 
     toggleLyricsBtn.addEventListener("click", () => {
@@ -1954,9 +2010,11 @@
         e.preventDefault();
         audioEl.volume = Math.max(0, audioEl.volume - 0.05);
       } else if (e.key === "n" || e.key === "N") {
-        playNextInPlaylist();
+        playNextInPlaylist(false);
       } else if (e.key === "p" || e.key === "P") {
         playPrevInPlaylist();
+      } else if (e.key === "m" || e.key === "M") {
+        if (playModeBtn) playModeBtn.click();
       }
     });
 
