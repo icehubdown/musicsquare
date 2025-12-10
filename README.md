@@ -1,6 +1,6 @@
 # 🌟 Overview
 
-Musicsquare is a simple music search, download, and play website. 
+MusicSquare is a simple music search, download, and play website. 
 It provides a lightweight, browser-friendly interface to search, play, and download music directly from your GitHub Pages site.
 
 This GitHub Pages deployment is available at:
