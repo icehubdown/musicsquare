@@ -2058,12 +2058,12 @@
 
         let miguListRaw = [];
         if (miguText) {
-          miguListRaw = parseSearchResultText(miguText).slice(0, 5); // 咪咕最多 5 条
+          miguListRaw = parseSearchResultText(miguText).slice(0, 10); // 咪咕最多 10 条
         }
 
         let neteaseListRaw = [];
         if (neteaseJson && neteaseJson.code === 200 && Array.isArray(neteaseJson.data)) {
-          neteaseListRaw = neteaseJson.data.slice(0, 5).map((it) => ({
+          neteaseListRaw = neteaseJson.data.slice(0, 10).map((it) => ({
             index: it.n,
             title: it.title,
             singer: it.singer,
