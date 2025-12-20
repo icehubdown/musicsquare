@@ -39,7 +39,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* 背景粒子画布：星空+连线 */
+    /* 背景粒子画布 */
     #bg-canvas {
       position: fixed;
       inset: 0;
@@ -53,25 +53,38 @@
         #02030a;
     }
 
-    /* 主容器：四周留白，让粒子露出来 */
+    /* 主容器：四周留白，玻璃面板略小一点，露出粒子 */
     .app {
       position: relative;
       z-index: 1;
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 32px);
-      margin: 16px 20px;
+      height: calc(100vh - 104px);
+      margin: 44px 80px;
       padding: 10px 12px;
       gap: 10px;
       border-radius: 24px;
       border: 1px solid rgba(255, 255, 255, 0.14);
       background: radial-gradient(circle at 0 0, rgba(255,255,255,0.06), transparent 60%),
-                  radial-gradient(circle at 100% 100%, rgba(135, 206, 250, 0.10), transparent 60%),
+                  radial-gradient(circle at 100% 100%, rgba(136,196,255,0.10), transparent 60%),
                   rgba(0,0,0,0.45);
       backdrop-filter: blur(14px);
       box-shadow:
         0 0 40px rgba(0,0,0,0.9),
         0 0 120px rgba(136,196,255,0.35);
+    }
+
+    @media (max-width: 1280px) {
+      .app {
+        margin: 32px 40px;
+        height: calc(100vh - 70px);
+      }
+    }
+    @media (max-width: 900px) {
+      .app {
+        margin: 16px;
+        height: calc(100vh - 32px);
+      }
     }
 
     .ripple-target,
@@ -92,6 +105,7 @@
       border: 1px solid var(--border-subtle);
       box-shadow: 0 10px 26px rgba(0,0,0,0.8);
       min-height: 64px;
+      flex-shrink: 0;
     }
 
     .logo-area {
@@ -100,7 +114,6 @@
       gap: 10px;
     }
 
-    /* 皮卡丘圆形头像，动图由 pikachu.gif 提供 */
     .pikachu-box {
       width: 72px;
       height: 72px;
@@ -193,10 +206,15 @@
       font-size: 15px;
     }
 
+    /* 布局：左右略宽，中间略窄一点 */
     .layout {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(260px,320px) minmax(400px,1.4fr) minmax(260px,320px);
+      /* 左中右都用 fr，让搜索 + 播放列表在大屏上自动变宽 */
+      grid-template-columns:
+        minmax(260px, 0.6fr)
+        minmax(360px, 2.0fr)
+        minmax(260px, 0.6fr);
       gap: 10px;
       min-height: 0;
     }
@@ -212,6 +230,8 @@
       border: 1px solid var(--border-subtle);
       backdrop-filter: blur(18px);
       box-shadow: 0 14px 34px rgba(0,0,0,0.85);
+      z-index: 0;
+      overflow: hidden;
     }
     .panel::before {
       content: "";
@@ -220,6 +240,7 @@
       background: radial-gradient(circle at 0 0, rgba(255,255,255,0.08), transparent 60%);
       opacity: .5;
       pointer-events: none;
+      z-index: -1;
     }
 
     .panel-header {
@@ -229,6 +250,7 @@
       margin-bottom: 6px;
       position: relative;
       z-index: 1;
+      flex-shrink: 0;
     }
     .panel-title {
       display: flex;
@@ -250,10 +272,10 @@
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 7px 14px;
+      padding: 6px 13px;
       background: radial-gradient(circle at 30% 0, rgba(255,255,255,0.2), var(--accent));
       color: #231b08;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
       cursor: pointer;
       box-shadow: 0 7px 16px rgba(245,200,76,0.75);
@@ -275,13 +297,13 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.85);
     }
     .btn-icon {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 0;
-      font-size: 14px;
+      font-size: 13px;
       border-radius: 999px;
     }
 
@@ -300,7 +322,7 @@
       box-shadow: 0 0 0 1px rgba(245,200,76,0.7);
     }
 
-    /* 左侧搜索区 */
+    /* 左侧搜索 */
     .search-panel-content {
       position: relative;
       z-index: 1;
@@ -309,7 +331,38 @@
       gap: 6px;
       min-height: 0;
     }
-    .search-row { display: flex; gap: 6px; }
+
+    /* 胶囊搜索条 */
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 2px 2px 2px 10px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.18), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(104,174,255,0.25), transparent 60%),
+        rgba(4,6,20,0.98);
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.9);
+    }
+    .search-prefix {
+      font-size: 14px;
+      margin-right: 6px;
+      color: var(--accent-strong);
+      text-shadow: 0 0 8px rgba(245,200,76,0.9);
+    }
+    .search-row .input {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      padding-left: 0;
+    }
+    .search-row .btn {
+      margin-left: 4px;
+      border-radius: 999px;
+    }
+
     .source-row {
       display: flex;
       flex-wrap: wrap;
@@ -432,24 +485,28 @@
       font-size: 9px;
     }
 
-    /* 中间播放器 */
+    /* 中间播放器（整体略小） */
     .player-panel {
       background:
-        radial-gradient(circle at 50% -40%, rgba(255,218,120,0.2), transparent 60%),
+        radial-gradient(circle at 50% -40%, rgba(255,218,120,0.20), transparent 60%),
         var(--panel-glass);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
     .player-top {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       position: relative;
       z-index: 1;
-      min-height: 190px;
+      min-height: 165px;
+      flex-shrink: 0;
     }
 
     .cover-wrapper {
-      width: 160px;
-      height: 160px;
-      border-radius: 20px;
+      width: 130px;
+      height: 130px;
+      border-radius: 18px;
       overflow: hidden;
       background: radial-gradient(circle at 30% 0, #34344b,#151628);
       box-shadow:
@@ -476,7 +533,7 @@
       font-size: 12px;
     }
     .cover-disc {
-      width: 75px; height: 75px;
+      width: 70px; height: 70px;
       border-radius: 50%;
       border: 10px solid rgba(0,0,0,0.7);
       background: radial-gradient(circle,#16141f 0,#000 45%,#222 70%,#000 100%);
@@ -508,15 +565,13 @@
     .track-title-row {
       display:flex;
       justify-content:space-between;
-      gap:8px;
+      gap:6px;
     }
-    .track-text {
-      max-width:70%;
-    }
+    .track-text { max-width:68%; }
     .track-title {
-      font-size:20px;
+      font-size:18px;
       font-weight:600;
-      max-height:50px;
+      max-height:48px;
       overflow:hidden;
     }
     .track-artist {
@@ -562,7 +617,7 @@
     }
     .player-btn-row {
       display:flex;
-      gap:6px;
+      gap:5px;
     }
     .status-pill {
       padding:2px 8px;
@@ -570,6 +625,7 @@
       border:1px solid rgba(255,255,255,0.18);
       background:rgba(0,0,0,0.35);
       color:var(--text-sub);
+      font-size:11px;
     }
 
     .player-controls {
@@ -628,8 +684,8 @@
       gap:6px;
     }
     .control-main .play-btn {
-      width:42px;
-      height:42px;
+      width:40px;
+      height:40px;
       font-size:18px;
     }
     .control-secondary {
@@ -643,13 +699,13 @@
       accent-color:var(--accent);
     }
 
-    /* 歌词：放大 + 霓虹+流光 */
+    /* 歌词：略小一点，最大宽度缩小，周围留更多空间 */
     .lyrics-container {
-      flex:1;
-      min-height:0;
-      margin-top:6px;
-      padding:14px 22px 10px;
-      border-radius:16px;
+      flex: 1;
+      min-height: 0;
+      margin-top: 6px;
+      padding: 10px 18px 8px;
+      border-radius: 16px;
       background:
         radial-gradient(circle at 50% 0, rgba(255,220,150,0.26), transparent 60%),
         radial-gradient(circle at 10% 100%, rgba(107,150,255,0.26), transparent 60%),
@@ -717,21 +773,21 @@
     .lyrics-inner {
       position:relative;
       z-index:1;
-      padding:4px 4px 14px;
+      padding:2px 4px 10px;
       text-align:center;
-      max-width:700px;
+      max-width:540px;
       margin:0 auto;
     }
     .lyrics-title-line {
       font-family: "Baloo 2","Nunito",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:16px;
+      font-size:14px;
       color:var(--text-sub);
-      margin-bottom:10px;
+      margin-bottom:8px;
       letter-spacing:0.05em;
     }
     .lyrics-line {
       font-family: "Baloo 2","Nunito",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:21px;
+      font-size:17px;
       color:rgba(196,199,235,0.78);
       margin:4px 0;
       opacity:0.52;
@@ -741,7 +797,7 @@
     }
     .lyrics-line.active {
       opacity:1;
-      transform:scale(1.16);
+      transform:scale(1.14);
       background:linear-gradient(120deg,#ffe6a7,#ff9bd4,#8fd5ff);
       -webkit-background-clip:text;
       background-clip:text;
@@ -753,9 +809,9 @@
     }
     .lyrics-empty {
       font-family: "Baloo 2","Nunito",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      font-size:16px;
+      font-size:15px;
       color:var(--text-sub);
-      margin-top:22px;
+      margin-top:18px;
       letter-spacing:0.03em;
     }
 
@@ -767,6 +823,7 @@
       display:flex;
       flex-direction:column;
       min-height:0;
+      z-index:1;
     }
 
     .playlist-tabs {
@@ -844,11 +901,11 @@
     .playmode-btn {
       border:none;
       border-radius:999px;
-      width:26px; height:26px;
+      width:24px; height:24px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:13px;
+      font-size:12px;
       background:rgba(0,0,0,0.35);
       color:var(--text-sub);
       cursor:pointer;
@@ -867,6 +924,7 @@
       padding-right:4px;
       margin-top:4px;
       position:relative;
+      z-index:1;
     }
 
     .track-item {
@@ -917,9 +975,9 @@
       justify-content:flex-end;
     }
     .track-actions .btn-icon {
-      width:26px;
-      height:26px;
-      font-size:13px;
+      width:24px;
+      height:24px;
+      font-size:12px;
     }
     .btn-fav-active {
       background:radial-gradient(circle at 30% 0, rgba(255,255,255,0.2), var(--accent-red));
@@ -932,6 +990,7 @@
       color:var(--text-sub);
       text-align:right;
       padding:0 4px 2px;
+      flex-shrink: 0;
     }
 
     #toast {
@@ -956,7 +1015,7 @@
       transform:translateX(-50%) translateY(-4px);
     }
 
-    /* 柔和水波纹：双圈 + 渐变 + 时间更长一点 */
+    /* 柔和水波纹：双圈 */
     .ripple-circle,
     .ripple-circle-inner {
       position:absolute;
@@ -993,7 +1052,7 @@
       }
     }
 
-    /* 自定义滚动条：内部区域滚动，页面不滚动 */
+    /* 自定义滚动条 */
     .search-results-mini::-webkit-scrollbar,
     .playlist-list::-webkit-scrollbar,
     .lyrics-container::-webkit-scrollbar {
@@ -1173,6 +1232,7 @@
     <header class="ripple-target">
       <div class="logo-area">
         <div class="pikachu-box ripple-target">
+          <!-- 请放一张你喜欢的 pikachu.gif 到同目录 -->
           <img src="pikachu.gif" alt="Pikachu" class="pikachu-img">
         </div>
         <div class="title-text">
@@ -1203,7 +1263,8 @@
           <span class="chip" data-i18n="searchSubtitle">支持咪咕 / 网易云 / QQ / 酷我</span>
         </div>
         <div class="search-panel-content">
-          <div class="search-row">
+          <div class="search-row ripple-target">
+            <span class="search-prefix">🔍</span>
             <input id="search-input" class="input" type="text"
                    placeholder="输入歌名 / 歌手，回车搜索…" />
             <button id="search-btn" class="btn ripple-target" data-i18n="searchButton">搜索</button>
@@ -1347,6 +1408,7 @@
             <div class="playlist-right-controls">
               <div id="playlist-select-row" class="playlist-select-row" style="display:none;">
                 <select id="playlist-select"></select>
+                <button id="add-current-btn" class="btn btn-secondary btn-icon ripple-target" title="把当前歌曲加入歌单">＋</button>
                 <button id="new-playlist-btn" class="btn btn-ghost ripple-target" data-i18n="newPlaylist">新建歌单</button>
               </div>
               <div class="playmode-row">
@@ -1385,7 +1447,7 @@
     </div>
   </div>
 
-  <!-- 快捷键说明弹窗（更可爱风格） -->
+  <!-- 快捷键说明弹窗 -->
   <div id="shortcut-modal" class="modal-backdrop">
     <div class="modal ripple-target">
       <div class="modal-header">
@@ -1501,6 +1563,8 @@
         toastPlaymodeList:"播放模式：列表循环",
         toastPlaymodeSingle:"播放模式：单曲循环",
         toastPlaymodeShuffle:"播放模式：随机播放",
+        toastNeedPlaylistSelected:"请先选择一个歌单。",
+        toastNoCurrentTrack:"当前没有正在播放的歌曲。",
         sourceMigu:"咪咕",
         sourceNetease:"网易云",
         sourceQQ:"QQ音乐",
@@ -1568,6 +1632,8 @@
         toastPlaymodeList:"Play mode: list loop",
         toastPlaymodeSingle:"Play mode: single loop",
         toastPlaymodeShuffle:"Play mode: shuffle",
+        toastNeedPlaylistSelected:"Please select a playlist first.",
+        toastNoCurrentTrack:"No track is currently playing.",
         sourceMigu:"Migu",
         sourceNetease:"Netease",
         sourceQQ:"QQ Music",
@@ -1602,6 +1668,8 @@
     };
 
     const dom = {};
+    let audioLevel = 0; // 用于粒子呼吸效果
+
     function $(id){return document.getElementById(id);}
     function t(k){const lang=state.language;return (translations[lang]&&translations[lang][k])||translations.zh[k]||k;}
     function showToast(msg){
@@ -1966,7 +2034,13 @@
 
     function getActiveList(){
       const tp=state.playContext.type;
-      if(tp==='results')return getInterleavedSearchList();
+      if(tp==='results'){
+        let list=getInterleavedSearchList();
+        if(!list.length && state.searchResults.length){
+          list=[...state.searchResults];
+        }
+        return list;
+      }
       if(tp==='favorites')return state.favorites;
       if(tp==='playlist'){
         const pl=state.playlists.find(p=>p.id===state.playContext.playlistId);
@@ -2038,6 +2112,22 @@
       window.open(tr.audioUrl,'_blank');
     }
 
+    function addCurrentToPlaylist(){
+      const plId=dom.playlistSelect.value;
+      if(!plId){showToast(t('toastNeedPlaylistSelected'));return;}
+      const track=state.currentTrack;
+      if(!track){showToast(t('toastNoCurrentTrack'));return;}
+      const pl=state.playlists.find(p=>p.id===plId);
+      if(!pl){showToast(t('toastNeedPlaylistSelected'));return;}
+      if(pl.tracks.some(tk=>tk.uid===track.uid)){
+        showToast(t('toastAlreadyInList'));
+        return;
+      }
+      pl.tracks.push(track);
+      renderPlaylistList();
+      showToast(t('toastAddedToPlaylist'));
+    }
+
     function renderMiniSearchList(){
       const wrap=dom.searchMiniList;
       wrap.innerHTML='';
@@ -2095,6 +2185,9 @@
       let list=[];
       if(activeTab==='results'){
         list=getInterleavedSearchList();
+        if(!list.length && state.searchResults.length){
+          list=[...state.searchResults];
+        }
         dom.playlistSelectRow.style.display='none';
       }else if(activeTab==='favorites'){
         list=state.favorites;
@@ -2237,6 +2330,7 @@
           vx:(Math.random()-0.5)*0.4,
           vy:(Math.random()-0.5)*0.4,
           r:1+Math.random()*2.5,
+          baseR:1+Math.random()*2.5,
           hue:200+Math.random()*120,
           a:0.22+Math.random()*0.3
         });
@@ -2245,6 +2339,7 @@
       window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
       function tick(){
         ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+        const pulse = 1 + audioLevel * 2.2;
         for(const p of parts){
           p.x+=p.vx; p.y+=p.vy; p.hue+=0.08;
           if(p.x<-40)p.x=window.innerWidth+40;
@@ -2256,8 +2351,9 @@
           const push=Math.max(0,140-dist)/140;
           p.x+=dx*0.011*push; p.y+=dy*0.011*push;
           ctx.beginPath();
-          ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-          ctx.fillStyle=`hsla(${p.hue},70%,60%,${p.a})`;
+          ctx.arc(p.x,p.y,p.baseR*pulse,0,Math.PI*2);
+          const light = Math.min(80, 60 + audioLevel*40);
+          ctx.fillStyle=`hsla(${p.hue},70%,${light}%,${p.a})`;
           ctx.fill();
         }
         ctx.lineWidth=0.45;
@@ -2267,7 +2363,7 @@
             const dx=a.x-b.x,dy=a.y-b.y;
             const d=Math.sqrt(dx*dx+dy*dy);
             if(d<100){
-              const al=0.10*(1-d/100);
+              const al=0.10*(1-d/100)*(0.6+audioLevel*1.5);
               ctx.beginPath();
               ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
               ctx.strokeStyle=`rgba(120,160,255,${al})`;
@@ -2341,6 +2437,7 @@
       dom.playlistSelectRow=$('playlist-select-row');
       dom.playlistSelect=$('playlist-select');
       dom.newPlaylistBtn=$('new-playlist-btn');
+      dom.addCurrentBtn=$('add-current-btn');
 
       dom.playlistModal=$('playlist-modal');
       dom.playlistNameInput=$('playlist-name-input');
@@ -2430,6 +2527,9 @@
           const w=dom.progressWrapper.clientWidth;
           dom.progressHandle.style.left=(w*r)+'px';
         }
+        // 用当前时间模拟节奏，让粒子有“跟着音乐”的感觉
+        const intensity = Math.abs(Math.sin(cur * 2.3));
+        audioLevel = 0.3 + 0.7 * intensity * (dom.audio.volume || 1);
         updateLyricsHighlight(cur);
       });
       dom.audio.addEventListener('play',()=>{
@@ -2441,8 +2541,12 @@
         state.isPlaying=false;
         dom.playBtn.textContent='▶';
         dom.playerStatus.textContent=t('playerStatusPaused');
+        audioLevel = 0;
       });
-      dom.audio.addEventListener('ended',()=>playNext('next'));
+      dom.audio.addEventListener('ended',()=>{
+        audioLevel = 0;
+        playNext('next');
+      });
 
       dom.progressWrapper.addEventListener('click',e=>{
         const rect=dom.progressWrapper.getBoundingClientRect();
@@ -2478,6 +2582,7 @@
         state.playContext.playlistId=dom.playlistSelect.value;
         renderPlaylistList();
       });
+      dom.addCurrentBtn.addEventListener('click',addCurrentToPlaylist);
 
       dom.shortcutToggleBtn.addEventListener('click',()=>{dom.shortcutModal.classList.add('show');});
       dom.shortcutCloseBtn.addEventListener('click',()=>{dom.shortcutModal.classList.remove('show');});
