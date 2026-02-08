@@ -267,7 +267,7 @@ const MusicAPI = {
     async _searchKuwo(keyword, page, limit, signal) {
         const pn = page - 1;
         // 使用新接口，strategy=2012 确保返回正版歌曲而不是翻唱版本
-        const targetUrl = `http://www.kuwo.cn/search/searchMusicBykeyWord?vipver=1&client=kt&ft=music&cluster=0&strategy=2012&encoding=utf8&rformat=json&mobi=1&issubtitle=1&show_copyright_off=1&pn=${pn}&rn=${limit}&all=${encodeURIComponent(keyword)}`;
+        const targetUrl = `http://www.kuwo.cn/search/searchMusicBykeyWord?vipver=1&client=kt&ft=music&cluster=0&strategy=2026&encoding=utf8&rformat=json&mobi=1&issubtitle=1&show_copyright_off=1&pn=${pn}&rn=${limit}&all=${encodeURIComponent(keyword)}`;
 
         const url = `${this.endpoints.worker}/tunehub/request`;
         const fetchOptions = {
@@ -640,7 +640,7 @@ const MusicAPI = {
 
     async _getPlaylistKuwo(playlistId) {
         // 增加限制到 2000
-        const targetUrl = `http://nplserver.kuwo.cn/pl.svc?op=getlistinfo&pid=${playlistId}&pn=0&rn=2000&encode=utf8&keyset=pl2012&vipver=MUSIC_9.0.5.0_W1&newver=1`;
+        const targetUrl = `http://nplserver.kuwo.cn/pl.svc?op=getlistinfo&pid=${playlistId}&pn=0&rn=2000&encode=utf8&keyset=pl2026&vipver=MUSIC_9.0.5.0_W1&newver=1`;
         const url = `${this.endpoints.worker}/tunehub/request`;
         const res = await fetch(url, {
             method: 'POST',
