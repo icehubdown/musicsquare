@@ -1307,27 +1307,3 @@ body {
   background: rgba(30, 207, 159, 0.2);
 }
 
-
-/* --- 主界面手机适配 --- */
-@media (max-width: 768px) {
-    /* 强制隐藏侧边栏 */
-    aside, .sidebar, #sidebar {
-        display: none !important;
-    }
-
-    /* 内容区撑满 */
-    main, .main-content, #main-content {
-        margin-left: 0 !important;
-        padding: 10px !important;
-        width: 100vw !important;
-    }
-
-    /* 播放条按钮简化 */
-    .player-controls {
-        gap: 10px !important;
-    }
-    
-    .volume-control, .extra-controls {
-        display: none !important;
-    }
-}
