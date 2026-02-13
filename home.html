@@ -14,7 +14,6 @@
 
 
     <style>
-
         :root {
             --primary-color: #1ecf9f;
             --bg-body: #f3f4f6;
@@ -1333,113 +1332,105 @@
         }
 
 
-        /* 移动端适配补丁 (Android/iPhone) */
+/* 移动端深度适配补丁 */
 @media (max-width: 768px) {
-    /* 1. 隐藏侧边栏，改为绝对定位，默认移出屏幕 */
+    /* --- 1. 侧边栏与导航显示 --- */
     .sidebar {
         position: fixed;
-        left: -100%; /* 彻底隐藏 */
+        left: -100%; 
         top: 0;
         bottom: 0;
         z-index: 1000;
-        width: 80% !important; /* 宽度占屏幕80% */
+        width: 70% !important;
+        background: var(--bg-sidebar) !important;
         transition: left 0.3s ease;
-        box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+        display: flex !important; /* 强制显示内容 */
     }
 
-    /* 当侧边栏激活时显示 (需配合JS或手动测试) */
+    /* 当侧边栏激活时 (点击头像或左滑时手动添加 active 类) */
     .sidebar.active {
         left: 0 !important;
     }
 
-    /* 2. 主内容区撑满全屏 */
-    .main-content {
-        width: 100vw !important;
-        margin-left: 0 !important;
+    /* --- 2. 解决搜歌看不到歌名的问题 --- */
+    /* 核心逻辑：重新分配网格比例，隐藏不重要的列 */
+    .list-header, .song-item {
+        /* 手机端只留三列：序号(40px)、歌曲信息(占据剩余空间)、操作(60px) */
+        grid-template-columns: 40px 1fr 60px !important; 
+        gap: 5px;
+        padding: 12px 5px !important;
     }
 
-    /* 3. 搜索栏调整：竖向堆叠或精简 */
+    /* 隐藏：歌手名(3)、专辑名(4)、时长(5) 列表 */
+    /* 注意：根据你的 HTML，我们需要保留的是第2列(歌名) */
+    .list-header div:nth-child(3), .song-item div:nth-child(3),
+    .list-header div:nth-child(4), .song-item div:nth-child(4),
+    .list-header div:nth-child(5), .song-item div:nth-child(5) {
+        display: none !important;
+    }
+
+    /* 强化歌名的显示 */
+    .song-item div:nth-child(2) {
+        display: block !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 14px;
+        color: var(--text-main);
+    }
+
+    /* --- 3. 顶部搜索栏优化 --- */
     .top-header {
         height: auto !important;
-        padding: 10px 15px !important;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .search-bar-container {
-        width: 100%;
-        max-width: none !important;
+        padding: 15px 10px !important;
         flex-wrap: wrap;
     }
 
+    .search-bar-container {
+        order: 2; /* 搜索框排在下面 */
+        width: 100%;
+        margin-top: 10px;
+    }
+
     .search-input-wrapper {
+        width: 70% !important;
+    }
+    
+    .search-input-wrapper input {
         width: 100% !important;
     }
 
-    .search-input-wrapper input:focus {
-        width: 100% !important;
-    }
-
-    /* 隐藏部分在手机上臃肿的元素 */
-    .source-controls, .header-right {
+    .header-right {
+        order: 1; /* 头像排在上面 */
         width: 100%;
         justify-content: space-between;
     }
 
-    /* 4. 歌曲列表改为移动端友好的显示（隐藏多余列） */
-    .list-header, .song-item {
-        /* 只保留 序号(50px) + 歌曲名(3fr) + 操作(100px) */
-        grid-template-columns: 40px 1fr 80px !important;
-        font-size: 13px !important;
-    }
-
-    /* 隐藏专辑、歌手、时长等在手机上显示不下的列 */
-    .song-item div:nth-child(3), 
-    .song-item div:nth-child(4),
-    .song-item div:nth-child(5),
-    .list-header div:nth-child(3),
-    .list-header div:nth-child(4),
-    .list-header div:nth-child(5) {
-        display: none !important;
-    }
-
-    /* 5. 底部播放器适配 */
+    /* --- 4. 底部播放器 --- */
     .player-bar {
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
         width: 100% !important;
         border-radius: 0 !important;
-        height: 70px !important;
         padding: 0 10px !important;
     }
 
-    .player-info-wrapper {
-        width: 120px !important;
-    }
-
-    .player-controls {
-        flex: 1;
-    }
-
-    .progress-container, .player-extra, .effect-wrapper {
-        display: none !important; /* 手机端隐藏进度条和音效切换，防止挤爆 */
-    }
-
-    /* 6. 播放器全屏界面适配 */
-    .player-overlay {
-        left: 0 !important;
-        right: 0 !important;
-        border-radius: 0 !important;
-        flex-direction: column !important; /* 左右布局改上下布局 */
+    .progress-container, .player-extra {
+        display: none !important;
     }
     
-    .player-overlay.active {
-        height: 100vh !important; /* 手机上直接全屏 */
-        top: 0 !important;
+    .control-btns {
+        gap: 10px !important;
     }
 }
-        
+
+
+    @media (max-width: 768px) {
+    #mobile-menu-btn {
+        display: block !important;
+    }
+    }    
     </style>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -1491,6 +1482,11 @@
     <main class="main-content">
         <!-- Top Header -->
         <header class="top-header">
+            
+            <div id="mobile-menu-btn" style="display: none; font-size: 20px; cursor: pointer; padding: 10px;">
+                <i class="fas fa-bars"></i>
+            </div>
+            
             <div class="search-bar-container" id="search-container">
                 <div class="search-input-wrapper">
                     <i class="fas fa-search search-icon"></i>
@@ -1707,6 +1703,26 @@
         </div>
     </div>
 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if(menuBtn) {
+                menuBtn.onclick = (e) => {
+                    e.stopPropagation(); // 防止点击冒泡
+                    sidebar.classList.toggle('active');
+                };
+            }
+
+            // 点击主内容区域隐藏侧边栏
+            document.querySelector('.main-content').onclick = () => {
+                sidebar.classList.remove('active');
+            };
+        });
+    </script>
+    
     <script src="js/api.js"></script>
     <script src="js/service.js"></script>
     <script src="js/player.js"></script>
