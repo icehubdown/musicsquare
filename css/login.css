@@ -140,29 +140,3 @@ body {
     to { transform: scale(1); opacity: 1; }
 }
 
-/* --- 登录页手机适配 --- */
-@media (max-width: 480px) {
-    body {
-        padding: 20px;
-        display: flex;
-        align-items: center; /* 手机上居中显示 */
-    }
-
-    .login-container {
-        width: 100% !important; /* 宽度由固定的 400px 改为 100% */
-        max-width: none !important;
-        margin: 0 auto;
-        padding: 30px 20px !important;
-        box-shadow: none !important; /* 手机端去掉阴影显得更清爽 */
-        background: transparent !important; /* 也可以保持白色，看你喜好 */
-    }
-
-    .logo {
-        font-size: 28px !important;
-        margin-bottom: 30px !important;
-    }
-
-    .input-wrapper input {
-        font-size: 16px !important; /* 防止 iOS 输入框自动放大页面 */
-    }
-}
