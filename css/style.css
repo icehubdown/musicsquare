@@ -1308,56 +1308,26 @@ body {
 }
 
 
-/* --- 手机端响应式适配 --- */
-@media screen and (max-width: 768px) {
-    /* 1. 隐藏侧边栏，给主内容留出空间 */
-    .sidebar {
-        position: fixed;
-        left: -100%; /* 默认隐藏在左侧外 */
-        z-index: 1000;
-        width: 200px;
-        transition: 0.3s;
-        height: calc(100% - 80px);
+/* --- 主界面手机适配 --- */
+@media (max-width: 768px) {
+    /* 强制隐藏侧边栏 */
+    aside, .sidebar, #sidebar {
+        display: none !important;
     }
 
-    /* 2. 调整主内容区，取消左边距 */
-    .main-content {
+    /* 内容区撑满 */
+    main, .main-content, #main-content {
         margin-left: 0 !important;
         padding: 10px !important;
-        padding-bottom: 100px !important; /* 为底部播放器留空 */
+        width: 100vw !important;
     }
 
-    /* 3. 歌曲列表网格调整：改为 2 列或 1 列 */
-    .song-grid {
-        grid-template-columns: repeat(2, 1fr) !important; 
+    /* 播放条按钮简化 */
+    .player-controls {
         gap: 10px !important;
     }
-
-    /* 4. 底部播放控制条适配 */
-    .player-bar {
-        height: auto !important;
-        flex-direction: column !important; /* 纵向排列 */
-        padding: 10px !important;
-    }
-
-    .current-song-info {
-        width: 100% !important;
-        margin-bottom: 10px;
-    }
-
-    .player-controls {
-        width: 100% !important;
-        justify-content: center !important;
-    }
-
-    /* 5. 隐藏一些手机上太占地方的元素 */
-    .volume-control, .search-bar input {
-        width: 120px; /* 缩小搜索框 */
-    }
     
-    /* 登录/注册弹窗适配 */
-    .modal-content {
-        width: 90% !important;
-        margin: 20% auto;
+    .volume-control, .extra-controls {
+        display: none !important;
     }
 }
