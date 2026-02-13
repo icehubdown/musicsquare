@@ -1332,105 +1332,97 @@
         }
 
 
-/* 移动端深度适配补丁 */
 @media (max-width: 768px) {
-    /* --- 1. 侧边栏与导航显示 --- */
-    .sidebar {
-        position: fixed;
-        left: -100%; 
-        top: 0;
-        bottom: 0;
-        z-index: 1000;
-        width: 70% !important;
-        background: var(--bg-sidebar) !important;
-        transition: left 0.3s ease;
-        display: flex !important; /* 强制显示内容 */
-    }
-
-    /* 当侧边栏激活时 (点击头像或左滑时手动添加 active 类) */
-    .sidebar.active {
-        left: 0 !important;
-    }
-
-    /* --- 2. 解决搜歌看不到歌名的问题 --- */
-    /* 核心逻辑：重新分配网格比例，隐藏不重要的列 */
+    /* 1. 解決搜歌看不到歌名的核心：強制重新分配網格 */
     .list-header, .song-item {
-        /* 手机端只留三列：序号(40px)、歌曲信息(占据剩余空间)、操作(60px) */
-        grid-template-columns: 40px 1fr 60px !important; 
-        gap: 5px;
-        padding: 12px 5px !important;
+        display: grid !important;
+        /* 序號(40px) + 歌名(剩下的所有空間) + 操作按鈕(80px) */
+        grid-template-columns: 40px 1fr 80px !important; 
+        align-items: center;
+        gap: 10px !important;
+        padding: 12px 10px !important;
     }
 
-    /* 隐藏：歌手名(3)、专辑名(4)、时长(5) 列表 */
-    /* 注意：根据你的 HTML，我们需要保留的是第2列(歌名) */
+    /* 隱藏手機上不需要的列：歌手、專輯、時長 */
+    /* 這裡要精確對應你的 HTML 結構，隱藏第 3, 4, 5 個 div */
     .list-header div:nth-child(3), .song-item div:nth-child(3),
     .list-header div:nth-child(4), .song-item div:nth-child(4),
     .list-header div:nth-child(5), .song-item div:nth-child(5) {
         display: none !important;
     }
 
-    /* 强化歌名的显示 */
+    /* 確保歌名列（第2個div）可見並自動截斷過長文字 */
     .song-item div:nth-child(2) {
         display: block !important;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 14px;
+        font-size: 15px;
         color: var(--text-main);
     }
 
-    /* --- 3. 顶部搜索栏优化 --- */
-    .top-header {
-        height: auto !important;
-        padding: 15px 10px !important;
-        flex-wrap: wrap;
-    }
-
-    .search-bar-container {
-        order: 2; /* 搜索框排在下面 */
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .search-input-wrapper {
-        width: 70% !important;
-    }
-    
-    .search-input-wrapper input {
-        width: 100% !important;
-    }
-
-    .header-right {
-        order: 1; /* 头像排在上面 */
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    /* --- 4. 底部播放器 --- */
-    .player-bar {
+    /* 2. 適配「懸浮全屏播放頁」(player-overlay) */
+    .player-overlay {
+        flex-direction: column !important; /* 從左右佈局變為上下佈局 */
+        padding: 20px !important;
+        overflow-y: auto !important;
         left: 0 !important;
         right: 0 !important;
-        bottom: 0 !important;
         width: 100% !important;
         border-radius: 0 !important;
-        padding: 0 10px !important;
     }
 
-    .progress-container, .player-extra {
-        display: none !important;
+    .player-overlay.active {
+        height: 100vh !important;
+        top: 0 !important;
     }
-    
-    .control-btns {
-        gap: 10px !important;
-    }
-}
 
-
-    @media (max-width: 768px) {
-    #mobile-menu-btn {
-        display: block !important;
+    /* 隱藏左側巨大的封面圖，或縮小它 */
+    .player-overlay-left {
+        width: 100% !important;
+        padding: 20px 0 !important;
+        display: flex;
+        justify-content: center;
     }
-    }    
+
+    .player-overlay-left img {
+        width: 200px !important; /* 縮小封面圖 */
+        height: 200px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    /* 右側歌詞區域撐滿剩餘空間 */
+    .player-overlay-right {
+        width: 100% !important;
+        height: 50vh !important;
+        padding: 10px !important;
+    }
+
+    #overlay-lyric-container {
+        height: 100% !important;
+        font-size: 16px !important;
+    }
+
+    /* 隱藏全屏模式下的頂部按鈕，防止擠佔空間 */
+    .overlay-close {
+        top: 20px !important;
+        right: 20px !important;
+        font-size: 28px !important;
+    }
+
+    /* 3. 側邊欄滑動修正 */
+    .sidebar {
+        position: fixed !important;
+        left: -280px !important;
+        width: 260px !important;
+        z-index: 9999 !important;
+        transition: all 0.3s ease;
+    }
+    .sidebar.active {
+        left: 0 !important;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+}    
     </style>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -1704,23 +1696,23 @@
     </div>
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuBtn = document.getElementById('mobile-menu-btn');
-            const sidebar = document.querySelector('.sidebar');
-            
-            if(menuBtn) {
-                menuBtn.onclick = (e) => {
-                    e.stopPropagation(); // 防止点击冒泡
-                    sidebar.classList.toggle('active');
-                };
-            }
+   <script>
+    // 使用監聽確保 DOM 完全加載
+    document.addEventListener('click', function(e) {
+        // 1. 處理菜單按鈕點擊
+        const menuBtn = e.target.closest('#mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        
+        if (menuBtn) {
+            sidebar.classList.toggle('active');
+            e.stopPropagation();
+        }
 
-            // 点击主内容区域隐藏侧边栏
-            document.querySelector('.main-content').onclick = () => {
-                sidebar.classList.remove('active');
-            };
-        });
+        // 2. 點擊側邊欄以外的地方關閉它
+        if (sidebar && sidebar.classList.contains('active') && !e.target.closest('.sidebar')) {
+            sidebar.classList.remove('active');
+        }
+    });
     </script>
     
     <script src="js/api.js"></script>
